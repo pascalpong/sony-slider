@@ -131,17 +131,20 @@ export default function Home() {
   /**
    * Handle touch move to detect swipe attempts and show email gate early.
    */
-  const handleTouchMove = (swiper: SwiperType, event: TouchEvent) => {
+  const handleTouchMove = (swiper: SwiperType, event: TouchEvent | MouseEvent | PointerEvent) => {
     if (!hasUnlocked && swiper.activeIndex === 9) {
-      const touch = event.touches[0];
-      const touchEventsData = (swiper as any).touchEventsData;
-      if (touchEventsData && touchEventsData.startX !== undefined) {
-        const deltaX = touch.clientX - touchEventsData.startX;
-        // If swiping left (negative deltaX) past threshold, show email gate immediately
-        if (deltaX < -50) {
-          setShowEmailGate(true);
-          // Try to prevent the slide change
-          event.preventDefault();
+      // Only handle touch events (not mouse/pointer events)
+      if (event instanceof TouchEvent && event.touches.length > 0) {
+        const touch = event.touches[0];
+        const touchEventsData = (swiper as any).touchEventsData;
+        if (touchEventsData && touchEventsData.startX !== undefined) {
+          const deltaX = touch.clientX - touchEventsData.startX;
+          // If swiping left (negative deltaX) past threshold, show email gate immediately
+          if (deltaX < -50) {
+            setShowEmailGate(true);
+            // Try to prevent the slide change
+            event.preventDefault();
+          }
         }
       }
     }
